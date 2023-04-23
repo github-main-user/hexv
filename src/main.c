@@ -3,14 +3,16 @@
 
 void curses_init(void);
 void curses_exit(void);
-void set_hex_text(uint8_t *text);
+void set_hex_text(uint8_t *text, int size);
 void wait_key(void);
 
 uint8_t *get_bytes(char *name);
 
+extern int size;
+
 int main(int argc, char **argv)
 {
-	uint8_t *bytes;
+	uint8_t *bytes = NULL;
 
 	curses_init();	
 
@@ -19,9 +21,14 @@ int main(int argc, char **argv)
 		bytes = get_bytes(argv[1]);
 	
 
-	set_hex_text(bytes);
+	if (bytes != NULL)
+	{
+		set_hex_text(bytes, size);
+		free(bytes);
+
+		wait_key();
+	}
 	
-	wait_key();
 	curses_exit();
 
 	
