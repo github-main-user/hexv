@@ -10,10 +10,14 @@ void get_bytes(char *name)
 
 int main(int argc, char **argv)
 {
+	uint8_t *bytes;
+
 	curses_init();	
 
+
 	if (argc == 2)
-		get_bytes(argv[1]);
+		bytes = get_bytes(argv[1]);
+	
 
 	set_hex_text(str);
 	

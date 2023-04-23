@@ -14,11 +14,14 @@ void *get_bytes(char *name)
 	}
 		
 	fseek(fp, 0L, SEEK_END);
-	int size = ftell(fp);
+	size = ftell(fp);
 	fseek(fp, 0L, SEEK_SET);
 
-	uint8_t bytes = malloc(size);
+	uint8_t *bytes = malloc(size);
 
 
 	fread(bytes, file_size, 1, fp);
+	fclose(fp);
+
+	return bytes;
 }
