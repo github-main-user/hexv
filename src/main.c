@@ -3,10 +3,10 @@
 
 void curses_init(void);
 void curses_exit(void);
-void set_hex_text(char *text);
+void set_hex_text(uint8_t *text);
 void wait_key(void);
 
-void get_bytes(char *name)
+uint8_t get_bytes(char *name);
 
 int main(int argc, char **argv)
 {
