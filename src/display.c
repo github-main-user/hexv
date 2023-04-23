@@ -24,7 +24,7 @@ void set_hex_text(uint8_t *bytes, int size)
 {
 	for (int i = 0; i < size; ++i)
 	{
-		wprintw(hex_win, "%02x", bytes[i]);	
+		wprintw(hex_win, "%02x ", bytes[i]);	
 	}
 	wrefresh(hex_win);
 }

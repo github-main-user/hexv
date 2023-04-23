@@ -4,7 +4,7 @@
 static FILE *fp;
 static int size;
 
-void *get_bytes(char *name)
+uint8_t *get_bytes(char *name)
 {
 	fp = fopen(name, "rb");
 	if (fp == NULL)

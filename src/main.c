@@ -6,7 +6,7 @@ void curses_exit(void);
 void set_hex_text(uint8_t *text);
 void wait_key(void);
 
-uint8_t get_bytes(char *name);
+uint8_t *get_bytes(char *name);
 
 int main(int argc, char **argv)
 {
@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 		bytes = get_bytes(argv[1]);
 	
 
-	set_hex_text(str);
+	set_hex_text(bytes);
 	
 	wait_key();
 	curses_exit();
