@@ -24,3 +24,8 @@ uint8_t *get_bytes(char *name)
 
 	return bytes;
 }
+
+int get_file_size()
+{
+	return size;
+}

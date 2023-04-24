@@ -2,10 +2,9 @@
 #include <curses.h>
 
 #define BYTES_WIDTH 16
+#define LINE_WIDTH 8
 
-WINDOW *line_win;
-WINDOW *hex_win;
-WINDOW *ascii_win;
+WINDOW *addr_win, *hex_win, *ascii_win;
 
 void curses_init()
 {
@@ -14,10 +13,20 @@ void curses_init()
 	start_color();
 	noecho();
 
+	
+	addr_win = newwin(LINES-2, LINE_WIDTH, 0, 0);
+	hex_win = newwin(LINES-2, BYTES_WIDTH * 3 , 0, LINE_WIDTH + 1);
 
-	hex_win = newwin(LINES-2, BYTES_WIDTH * 3 , 1, 3);
 
 	refresh();
+}
+
+void set_addr_text(int size)
+{
+	for (int i = 0; i < size; i += BYTES_WIDTH)
+		wprintw(addr_win, "%08x", i);
+
+	wrefresh(addr_win);
 }
 
 void set_hex_text(uint8_t *bytes, int size)
@@ -30,6 +39,7 @@ void set_hex_text(uint8_t *bytes, int size)
 
 void curses_exit(void)
 {
+	delwin(addr_win);
 	delwin(hex_win);
 
 	curs_set(1);
