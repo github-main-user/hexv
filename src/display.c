@@ -15,7 +15,8 @@ void curses_init()
 
 	
 	addr_win = newwin(LINES-2, LINE_WIDTH, 0, 0);
-	hex_win = newwin(LINES-2, BYTES_WIDTH * 3 , 0, LINE_WIDTH + 1);
+	hex_win = newwin(LINES-2, BYTES_WIDTH * 3 , 0, LINE_WIDTH + 2);
+	ascii_win = newwin(LINES-2, BYTES_WIDTH, 0, (LINE_WIDTH + 2) + (BYTES_WIDTH * 3) + 1);
 
 
 	refresh();
@@ -37,10 +38,19 @@ void set_hex_text(uint8_t *bytes, int size)
 	wrefresh(hex_win);
 }
 
+void set_ascii_text(uint8_t *bytes, int size)
+{
+	for (int i = 0; i < size; ++i)
+		wprintw(ascii_win, "%c", (bytes[i] > 32 && bytes[i] < 128) ? bytes[i] : '.');
+
+	wrefresh(ascii_win);
+}
+
 void curses_exit(void)
 {
 	delwin(addr_win);
 	delwin(hex_win);
+	delwin(ascii_win);
 
 	curs_set(1);
 	endwin();
