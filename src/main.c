@@ -6,7 +6,7 @@ void curses_exit(void);
 void set_addr_text(int size);
 void set_hex_text(uint8_t *bytes, int size);
 void set_ascii_text(uint8_t *bytes, int size);
-void wait_key(void);
+void control(void);
 
 uint8_t *get_bytes(char *name);
 int get_file_size(void);
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
 		set_hex_text(bytes, size);
 		set_ascii_text(bytes, size);
 
-		wait_key();
+		control();
 
 		free(bytes);
 	}

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdlib.h>
 #include <curses.h>
 
 #define BYTES_WIDTH 16
@@ -14,9 +15,13 @@ void curses_init()
 	noecho();
 
 	
-	addr_win = newwin(LINES-2, LINE_WIDTH, 0, 0);
-	hex_win = newwin(LINES-2, BYTES_WIDTH * 3 , 0, LINE_WIDTH + 2);
-	ascii_win = newwin(LINES-2, BYTES_WIDTH, 0, (LINE_WIDTH + 2) + (BYTES_WIDTH * 3) + 1);
+	addr_win =  newwin(LINES, LINE_WIDTH,      0, 0);
+	hex_win =   newwin(LINES, BYTES_WIDTH * 3, 0, LINE_WIDTH + 2);
+	ascii_win = newwin(LINES, BYTES_WIDTH,     0, (LINE_WIDTH + 2) + (BYTES_WIDTH * 3) + 1);
+
+	scrollok(addr_win, TRUE);
+	scrollok(hex_win, TRUE);
+	scrollok(ascii_win, TRUE);
 
 
 	refresh();
@@ -56,7 +61,15 @@ void curses_exit(void)
 	endwin();
 }
 
-void wait_key()
+void control()
 {
-	getch();
+	char key;
+
+	while (true)
+	{
+		switch (key = getch())
+		{
+			case 'q': curses_exit(); exit(0); break;
+		}
+	}
 }
