@@ -17,7 +17,9 @@ uint8_t *get_bytes(char *name)
 	fseek(fp, 0L, SEEK_SET);
 
 
-	uint8_t *bytes = malloc(size);
+	uint8_t *bytes;
+	if ((bytes = malloc(size)) == NULL)
+		return NULL;
 
 	fread(bytes, size, 1, fp);
 	fclose(fp);
