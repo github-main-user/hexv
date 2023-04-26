@@ -13,6 +13,7 @@ void curses_init()
 	curs_set(0);
 	start_color();
 	noecho();
+	keypad(stdscr, TRUE);
 
 	
 	addr_win =  newwin(LINES, LINE_WIDTH,      0, 0);
@@ -63,13 +64,17 @@ void curses_exit(void)
 
 void control()
 {
-	char key;
+	int key;
 
 	while (true)
 	{
 		switch (key = getch())
 		{
 			case 'q': curses_exit(); exit(0); break;
+			case KEY_LEFT: break;
+			case KEY_RIGHT: break;
+			case KEY_UP: break;
+			case KEY_DOWN: break;
 		}
 	}
 }
