@@ -3,9 +3,9 @@
 #include <curses.h>
 
 #define BYTES_WIDTH 16
-#define LINE_WIDTH 8
+#define ADDR_LENGTH 8
 
-WINDOW *addr_win, *hex_win, *ascii_win;
+static WINDOW *addr_win, *hex_win, *ascii_win;
 
 void curses_init()
 {
@@ -16,9 +16,9 @@ void curses_init()
 	keypad(stdscr, TRUE);
 
 	
-	addr_win =  newwin(LINES, LINE_WIDTH,      0, 0);
-	hex_win =   newwin(LINES, BYTES_WIDTH * 3, 0, LINE_WIDTH + 2);
-	ascii_win = newwin(LINES, BYTES_WIDTH,     0, (LINE_WIDTH + 2) + (BYTES_WIDTH * 3) + 1);
+	addr_win =  newwin(LINES, ADDR_LENGTH,     0, 0);
+	hex_win =   newwin(LINES, BYTES_WIDTH * 3, 0, ADDR_LENGTH + 2);
+	ascii_win = newwin(LINES, BYTES_WIDTH,     0, (ADDR_LENGTH + 2) + (BYTES_WIDTH * 3) + 1);
 
 	scrollok(addr_win, TRUE);
 	scrollok(hex_win, TRUE);
