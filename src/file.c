@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stdio.h>
 
-FILE *fp;
-int size;
+static FILE *fp;
+static int size;
 
 uint8_t *get_bytes(char *name)
 {

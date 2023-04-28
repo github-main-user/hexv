@@ -1,15 +1,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-void curses_init(void);
-void curses_exit(void);
-void set_addr_text(int size);
-void set_hex_text(uint8_t *bytes, int size);
-void set_ascii_text(uint8_t *bytes, int size);
-void control(void);
+extern void curses_init(void);
+extern void curses_exit(void);
+extern void set_addr_text(int size);
+extern void set_hex_text(uint8_t *bytes, int size);
+extern void set_ascii_text(uint8_t *bytes, int size);
+extern void control(void);
 
-uint8_t *get_bytes(char *name);
-int get_file_size(void);
+extern uint8_t *get_bytes(char *name);
+extern int get_file_size(void);
 
 
 int main(int argc, char **argv)

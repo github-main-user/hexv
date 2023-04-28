@@ -5,7 +5,7 @@
 #define BYTES_WIDTH 16
 #define ADDR_LENGTH 8
 
-int get_file_size(void);
+extern int get_file_size(void);
 
 static WINDOW *addr_pad, *hex_pad, *ascii_pad;
 static int curr_y = 0;
