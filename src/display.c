@@ -32,28 +32,23 @@ void curses_init()
 	refresh();
 }
 
-void set_addr_text(int size)
+void fill_all_pads(uint8_t *bytes, int size)
 {
-	for (int i = 0; i < size; i += BYTES_WIDTH)
+	int i;
+
+	for (i = 0; i < size; i += BYTES_WIDTH)
 		wprintw(addr_pad, "%08x", i);
 
-	wrefresh(addr_pad);
-}
-
-void set_hex_text(uint8_t *bytes, int size)
-{
-	for (int i = 0; i < size; ++i)
+	for (i = 0; i < size; ++i)
 		wprintw(hex_pad, "%02x ", bytes[i]);	
 
-	wrefresh(hex_pad);
-}
-
-void set_ascii_text(uint8_t *bytes, int size)
-{
-	for (int i = 0; i < size; ++i)
+	for (i = 0; i < size; ++i)
 		wprintw(ascii_pad, "%c", (bytes[i] > 32 && bytes[i] < 128) ? bytes[i] : '.');
 
+
+	wrefresh(hex_pad);
 	wrefresh(ascii_pad);
+	wrefresh(addr_pad);
 }
 
 void curses_exit(void)
