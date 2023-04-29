@@ -11,18 +11,14 @@ static WINDOW *addr_pad, *hex_pad, *ascii_pad;
 static int curr_y = 0;
 static int max_lines;
 
-static void print_header()
-{
-	for (int i = 0; i < BYTES_WIDTH; ++i)
-		mvprintw(0, (ADDR_LENGTH + 1) + i * 3, "%02x", i);
-
-}
-
 void curses_init()
 {
+	void init_pallete(void), print_header(void);
+
 	initscr();
 	curs_set(0);
 	start_color();
+	init_pallete();
 	noecho();
 	keypad(stdscr, TRUE);
 
@@ -36,8 +32,31 @@ void curses_init()
 	refresh();
 }
 
+void init_pallete()
+{
+	init_pair(0, COLOR_WHITE, COLOR_BLACK);
+	init_pair(1, COLOR_BLACK, COLOR_WHITE);
+	init_pair(2, COLOR_CYAN, COLOR_BLACK);
+}
 
-static void refresh_all_pads()
+void print_header()
+{
+	int i;
+
+	attron(COLOR_PAIR(2));
+
+	printw("offset:   ");
+	for (i = 0; i < BYTES_WIDTH; ++i)
+		printw("%02x ", i);
+
+	addch(' ');
+	for (i = 0; i < BYTES_WIDTH; ++i)
+		printw("%1x", i);
+
+	attroff(COLOR_PAIR(2));
+}
+
+void refresh_all_pads()
 {
 	prefresh(addr_pad,  curr_y, 0, 1, 0,										 LINES - 1, ADDR_LENGTH + 1);
 	prefresh(hex_pad,   curr_y, 0, 1, ADDR_LENGTH + 1,							 LINES - 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3));
@@ -48,8 +67,10 @@ void fill_all_pads(uint8_t *bytes, int size)
 {
 	int i;
 
+	attron(COLOR_PAIR(2));
 	for (i = 0; i < size; i += BYTES_WIDTH)
 		wprintw(addr_pad, "%08x:", i);
+	attroff(COLOR_PAIR(2));
 
 	for (i = 0; i < size; ++i)
 		wprintw(hex_pad, "%02x ", bytes[i]);	
