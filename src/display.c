@@ -3,13 +3,20 @@
 #include <ncurses.h>
 
 #define BYTES_WIDTH 16
-#define ADDR_LENGTH 8
+#define ADDR_LENGTH 9
 
 extern int get_file_size(void);
 
 static WINDOW *addr_pad, *hex_pad, *ascii_pad;
 static int curr_y = 0;
 static int max_lines;
+
+static void print_header()
+{
+	for (int i = 0; i < BYTES_WIDTH; ++i)
+		mvprintw(0, (ADDR_LENGTH + 1) + i * 3, "%02x", i);
+
+}
 
 void curses_init()
 {
@@ -21,15 +28,20 @@ void curses_init()
 
 	max_lines = get_file_size() / BYTES_WIDTH;
 	
-	//addr_pad =  newpad(LINES, ADDR_LENGTH,     0, 0);
-	//hex_pad =   newpad(LINES, BYTES_WIDTH * 3, 0, ADDR_LENGTH + 2);
-	//ascii_pad = newpad(LINES, BYTES_WIDTH,     0, (ADDR_LENGTH + 2) + (BYTES_WIDTH * 3) + 1);
-
 	addr_pad =  newpad(max_lines, ADDR_LENGTH);
     hex_pad =   newpad(max_lines, BYTES_WIDTH * 3);
     ascii_pad = newpad(max_lines, BYTES_WIDTH);
 
+	print_header();
 	refresh();
+}
+
+
+static void refresh_all_pads()
+{
+	prefresh(addr_pad,  curr_y, 0, 1, 0,										 LINES - 1, ADDR_LENGTH + 1);
+	prefresh(hex_pad,   curr_y, 0, 1, ADDR_LENGTH + 1,							 LINES - 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3));
+	prefresh(ascii_pad, curr_y, 0, 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3) + 1, LINES - 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3) + BYTES_WIDTH);
 }
 
 void fill_all_pads(uint8_t *bytes, int size)
@@ -37,7 +49,7 @@ void fill_all_pads(uint8_t *bytes, int size)
 	int i;
 
 	for (i = 0; i < size; i += BYTES_WIDTH)
-		wprintw(addr_pad, "%08x", i);
+		wprintw(addr_pad, "%08x:", i);
 
 	for (i = 0; i < size; ++i)
 		wprintw(hex_pad, "%02x ", bytes[i]);	
@@ -46,9 +58,7 @@ void fill_all_pads(uint8_t *bytes, int size)
 		wprintw(ascii_pad, "%c", (bytes[i] > 32 && bytes[i] < 128) ? bytes[i] : '.');
 
 
-	wrefresh(hex_pad);
-	wrefresh(ascii_pad);
-	wrefresh(addr_pad);
+	refresh_all_pads();
 }
 
 void curses_exit(void)
@@ -65,9 +75,7 @@ static void scroll_all_wins(int key, int direction)
 {
 	curr_y += direction;
 
-	prefresh(addr_pad,  curr_y, 0, 0, 0, max_lines, ADDR_LENGTH);
-	prefresh(hex_pad,   curr_y, 0, 0, ADDR_LENGTH + 2, max_lines, BYTES_WIDTH);
-	prefresh(ascii_pad, curr_y, 0, 0, (ADDR_LENGTH + 2) + (BYTES_WIDTH * 3) + 1, max_lines, BYTES_WIDTH * 3);
+	refresh_all_pads();
 }
 
 void control()
@@ -84,9 +92,9 @@ void control()
 			case 'l':
 			case KEY_RIGHT: break;
 			case 'k':
-			case KEY_UP: scroll_all_wins(key, 1); break;
+			case KEY_UP: scroll_all_wins(key, -1); break;
 			case 'j': 
-			case KEY_DOWN: scroll_all_wins(key, -1); break;
+			case KEY_DOWN: scroll_all_wins(key, 1); break;
 		}
 	}
 }
