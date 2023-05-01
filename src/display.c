@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <ncurses.h>
 
 #define BYTES_WIDTH 16
@@ -10,8 +11,8 @@
 extern int get_file_size(void);
 
 static WINDOW *addr_pad, *hex_pad, *ascii_pad;
-static int cursor = 0, curr_y = 0;
-static int max_lines;
+static int cursor = 0, begin_y = 0;
+static int size, max_lines;
 void move_cursor(int);
 
 void curses_init()
@@ -25,7 +26,8 @@ void curses_init()
 	noecho();
 	keypad(stdscr, TRUE);
 
-	max_lines = get_file_size() / BYTES_WIDTH;
+	size = get_file_size();
+	max_lines = size / BYTES_WIDTH;
 	
 	addr_pad =  newpad(max_lines, ADDR_LENGTH);
     hex_pad =   newpad(max_lines, BYTES_WIDTH * 3);
@@ -60,9 +62,9 @@ void print_header()
 
 void refresh_all_pads()
 {
-	prefresh(addr_pad,  curr_y, 0, 1, 0,										 LINES - 1, ADDR_LENGTH + 1);
-	prefresh(hex_pad,   curr_y, 0, 1, ADDR_LENGTH + 1,							 LINES - 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3));
-	prefresh(ascii_pad, curr_y, 0, 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3) + 1, LINES - 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3) + BYTES_WIDTH);
+	prefresh(addr_pad,  begin_y, 0, 1, 0,										 LINES - 1, ADDR_LENGTH + 1);
+	prefresh(hex_pad,   begin_y, 0, 1, ADDR_LENGTH + 1,							 LINES - 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3));
+	prefresh(ascii_pad, begin_y, 0, 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3) + 1, LINES - 1, (ADDR_LENGTH + 1) + (BYTES_WIDTH * 3) + BYTES_WIDTH);
 }
 
 void fill_all_pads(uint8_t *bytes, int size)
@@ -78,7 +80,7 @@ void fill_all_pads(uint8_t *bytes, int size)
 		wprintw(hex_pad, "%02x ", bytes[i]);	
 
 	for (i = 0; i < size; ++i)
-		wprintw(ascii_pad, "%c", (bytes[i] > 32 && bytes[i] < 128) ? bytes[i] : '.');
+		wprintw(ascii_pad, "%c", (isgraph(bytes[i])) ? bytes[i] : '.');
 
 
 	refresh_all_pads();
@@ -98,8 +100,21 @@ void curses_exit(void)
 void move_cursor(int direction)
 {
 	cursor = max(0, cursor + direction);
-	if ((cursor / BYTES_WIDTH) >= LINES - 1)
-		curr_y++;
+	if ((cursor / BYTES_WIDTH) >= begin_y + LINES - 1)
+	{
+		if (direction == BYTES_WIDTH)
+			begin_y++;
+		else if (cursor % BYTES_WIDTH == 0)
+			begin_y++;
+
+	}
+	else if ((cursor / BYTES_WIDTH) <= begin_y - 1)
+	{
+		if (direction == -BYTES_WIDTH)
+			begin_y--;
+		else if (cursor % BYTES_WIDTH == BYTES_WIDTH - 1)
+			begin_y--;
+	}
 
 	wchgat(hex_pad, 2, A_NORMAL, 0, NULL); // clear old
 	wchgat(ascii_pad, 1, A_NORMAL, 0, NULL); // clear old
