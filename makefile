@@ -1,23 +1,14 @@
 TARGET = main
-LIBS = -lncurses
-LDFLAGS = $(LIBS)
+LDFLAGS = -lncurses
+VPATH = src
 
-SRC_DIR = src
-VPATH = $(SRC_DIR)
+OBJECTS = main.o display.o file.o
 
-$(TARGET): main.o display.o file.o
-	$(CC) -o $(TARGET) $(SRC_DIR)/main.o $(SRC_DIR)/display.o $(SRC_DIR)/file.o $(LDFLAGS)
+$(TARGET): $(OBJECTS)
+	$(CC) -o $(TARGET) $^ $(LDFLAGS)
 
-main.o: main.c
-	$(CC) -c -o $(SRC_DIR)/$@ $<
-
-display.o: display.c
-	$(CC) -c -o $(SRC_DIR)/$@ $<
-
-file.o: file.c
-	$(CC) -c -o $(SRC_DIR)/$@ $<
-
+%.o: %.c
+	$(CC) -c $< -o $@
 
 clean:
-	$(RM) $(SRC_DIR)/*.o
-	$(RM) $(TARGET)
+	$(RM) *.o $(TARGET)
